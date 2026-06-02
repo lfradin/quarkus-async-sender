@@ -5,7 +5,7 @@ This project run reactive stream calls to a target service. It exhibits a memory
 ## Running the application in dev mode
 
 Before you run the application, you should run the docker compose file running the necessary
-services for the test (an lgtm image for Grafana dashboards, and an nginx service as a mock target
+services for the test (an nginx service as a mock target
 for the REST calls the application makes).
 
 ```shell script

@@ -1,7 +1,5 @@
 package dev.lfradin.sender;
 
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
 import io.quarkus.logging.Log;
 import io.quarkus.rest.client.reactive.QuarkusRestClientBuilder;
 import io.quarkus.runtime.ShutdownEvent;
@@ -19,16 +17,13 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.net.URI;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiFunction;
 
 @ApplicationScoped
 public class SenderApplication {
-    private final Counter senderAppSentEvent;
+    private final AtomicLong senderAppSentEvent = new AtomicLong();
     private Cancellable cancellableTask;
-
-    public SenderApplication(MeterRegistry meterRegistry) {
-        senderAppSentEvent = meterRegistry.counter("sender_app_sent_events");
-    }
 
     /**
      * Simple event record
@@ -56,12 +51,19 @@ public class SenderApplication {
                 Multi.createFrom().generator(() -> 1L, eventGenerator())
                 // Process every event, sending them on by one to target service
                 .onItem().transformToUniAndConcatenate(eventTarget::postEvent)
-                .onItem().invoke(() -> senderAppSentEvent.increment())
-                .onTermination().invoke(()-> Log.infof("Total events sent: %s", senderAppSentEvent.count()));
+                .onItem().invoke(this::incrementCount)
+                .onTermination().invoke(()-> Log.infof("Total events sent: %s", senderAppSentEvent.get()));
 
         cancellableTask = processResult.subscribe()
                 .with(response -> Log.debugf("Event sent with status %s", response.getStatus()),
                         failure -> Log.errorf(failure, "Failure: %s", failure.getMessage()));
+    }
+
+    private void incrementCount() {
+        long count = senderAppSentEvent.incrementAndGet();
+        if (count % 10000 == 0) {
+            Log.infof("Events sent so far: %s", count);
+        }
     }
 
     public void onStop(@Observes ShutdownEvent ev) {

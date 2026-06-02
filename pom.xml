@@ -32,11 +32,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.quarkiverse.micrometer.registry</groupId>
-            <artifactId>quarkus-micrometer-registry-otlp</artifactId>
-            <version>3.5.0</version>
-        </dependency>
-        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
