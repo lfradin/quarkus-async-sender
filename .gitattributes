@@ -1,0 +1,23 @@
+* text=auto eol=lf
+
+# windows only files
+*.bat text eol=crlf
+
+# specific test files to be managed as binary
+# (we care about their hashes, so not a single bit can be changed)
+modules/dictao-dtp-core/src/test/resources/proof/**/*.xml -text
+
+# binary files
+*.bz2 -text
+*.jpg -text
+*.jks -text
+*.p12 -text
+*.pdf -text
+*.png -text
+*.PNG -text
+*.zip -text
+*.ttf -text
+*.gif -text
+*.exe -text
+*.dll -text
+*.bin -text

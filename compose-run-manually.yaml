@@ -1,0 +1,17 @@
+services:
+  web:
+    image: nginx:1.31.1-alpine-slim
+    volumes:
+      - ./src/test/docker/nginx/conf.d:/etc/nginx/conf.d:ro
+    ports:
+      - "8082:8082"
+  lgtm:
+    image: docker.io/grafana/otel-lgtm:0.24.0
+    ports:
+      - "3000:3000"   # Grafana
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+    volumes:
+      - ./src/test/docker/grafana/dashboards:/otel-lgtm/grafana/conf/provisioning/dashboards/custom:ro
+      # override the out of box grafana dashboards, as they do not work great for this setup
+      - ./src/test/docker/grafana/dashboards-provisioning.yaml:/otel-lgtm/grafana/conf/provisioning/dashboards/grafana-dashboards.yaml:ro
