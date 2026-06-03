@@ -15,7 +15,7 @@ docker compose -f compose-run-manually.yaml up -d
 You can run your application in dev mode that enables live coding using:
 (we limit the memory usage to show the memory leak)
 ```shell script
-./mvnw quarkus:dev -Djvm.args="-Xmx100m"
+./mvnw quarkus:dev -Djvm.args="-Xmx100m -XX:+HeapDumpOnOutOfMemoryError -XX:+ExitOnOutOfMemoryError"
 ```
 With quarkus 3.21.1 and above, the application will end up with an out-of-memory error after about 120000 calls.
 
@@ -42,5 +42,5 @@ If you want to build an _über-jar_, execute the following command:
 ./mvnw package -Dquarkus.package.jar.type=uber-jar
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -Xmx100m -jar target/*-runner.jar`.
+The application, packaged as an _über-jar_, is now runnable using `java -Xmx100m -XX:+HeapDumpOnOutOfMemoryError -XX:+ExitOnOutOfMemoryError -jar target/*-runner.jar`.
 
